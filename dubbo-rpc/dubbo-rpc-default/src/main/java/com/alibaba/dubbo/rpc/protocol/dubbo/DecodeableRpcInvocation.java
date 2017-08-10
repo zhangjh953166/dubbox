@@ -88,6 +88,7 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
         throw new UnsupportedOperationException();
     }
 
+    private final String dubbox_version = "2.8.";
     public Object decode(Channel channel, InputStream input) throws IOException {
         ObjectInput in = CodecSupport.getSerialization(channel.getUrl(), serializationType)
                 .deserialize(channel.getUrl(), input);
@@ -103,7 +104,11 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
                 Class<?>[] pts;
 
                 // NOTICE modified by lishen
-                int argNum = in.readInt();
+                String dubbo_version = this.getAttachment(Constants.DUBBO_VERSION_KEY);
+                int argNum = -1;
+                if(dubbo_version.contains(dubbox_version)){
+                	argNum = in.readInt();
+                }
                 if (argNum >= 0) {
                     if (argNum == 0) {
                         pts = DubboCodec.EMPTY_CLASS_ARRAY;
